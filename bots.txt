@@ -1,0 +1,3 @@
+# This is a comment.
+Random Builder
+python3 bots/randombuilder/random_builder.py
