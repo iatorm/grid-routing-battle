@@ -50,4 +50,4 @@ A letter in brackets, as in `[n]`, signifies a variable, as opposed to the actua
 
 - `SCORE [S1] [S2] ... [Sn]` is given after the final turn. Each `[Si]` is the score of bot `i` obtained in this round.
 
-If more than **2 seconds** passes between the initial message/activation report and the next choice of vertex your bot makes, or more than **1 second** passes between the score report and the termination of your bot, it is disqualified.
+If more than **1 second** passes between the initial message/activation report and the next choice of vertex your bot makes, or more than **1 second** passes between the score report and the termination of your bot, it is disqualified.
