@@ -82,7 +82,7 @@ def run_round(bots):
             bot.handle.stdin.write(bot.report)
             bot.handle.stdin.write("DESTROY %d\n"%(turn,))
             response = bot.handle.stdout.readline()
-            if t.time() - time > 2:
+            if t.time() - time > 1:
                 print("  Bot %s was too slow to destroy."%(bot.name,))
                 slows.add(bot)
             if response[:6] == "VERTEX":
@@ -101,7 +101,7 @@ def run_round(bots):
             bot.handle.stdin.write(bot.report)
             bot.handle.stdin.write("ACTIVATE %d\n"%(turn,))
             response = bot.handle.stdout.readline()
-            if t.time() - time > 2:
+            if t.time() - time > 1:
                 print("  Bot %s was too slow to claim."%(bot.name,))
                 slows.add(bot)
             if response[:6] == "VERTEX":
