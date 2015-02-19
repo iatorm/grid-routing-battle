@@ -2,7 +2,7 @@
 
 ## The Challenge
 
-See the PPCG question for rules and other details.
+See the [PPCG question](http://codegolf.stackexchange.com/questions/46886/grid-routing-battle) for rules and other details.
 
 ## Using This Controller
 
