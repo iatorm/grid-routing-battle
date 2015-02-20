@@ -28,8 +28,8 @@ Each bot can freely access this file during the game.
 
 The controller uses the file `bots.txt` to enumerate the bots.
 Any line beginning with `#` in that file is a comment.
-The non-comment lines should occur in pairs, with the first one containing the name of a bot, and the second the command to run it.
-The commands are executed with the main directory as the working directory.
+The non-comment lines should occur in triples, with the first one containing the name of a bot, the second its subdirectory, and the third the command to run it.
+The commands are executed with the bot's subdirectory as the working directory.
 
 ## Bot API
 
