@@ -80,7 +80,9 @@ def run_round(bots):
             bot.last_choice = None
             time = t.time()
             bot.handle.stdin.write(bot.report)
+            bot.handle.stdin.flush()
             bot.handle.stdin.write("DESTROY %d\n"%(turn,))
+            bot.handle.stdin.flush()
             response = bot.handle.stdout.readline()
             if t.time() - time > 1:
                 print("  Bot %s was too slow to destroy."%(bot.name,))
@@ -99,7 +101,9 @@ def run_round(bots):
             bot.last_choice = None
             time = t.time()
             bot.handle.stdin.write(bot.report)
+            bot.handle.stdin.flush()
             bot.handle.stdin.write("ACTIVATE %d\n"%(turn,))
+            bot.handle.stdin.flush()
             response = bot.handle.stdout.readline()
             if t.time() - time > 1:
                 print("  Bot %s was too slow to claim."%(bot.name,))
@@ -154,7 +158,9 @@ def run_round(bots):
         message = "SCORE %d %s\n"%(bot.delta_score, " ".join(str(enemy.delta_score) for enemy in bot.enemies))
         time = t.time()
         bot.handle.stdin.write(bot.report)
+        bot.handle.stdin.flush()
         bot.handle.stdin.write(message)
+        bot.handle.stdin.flush()
         bot.handle.stdin.close()
         bot.handle.wait()
         if t.time() - time > 1:
