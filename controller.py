@@ -68,7 +68,7 @@ def run_round(bots):
     turns = len(bots)**2
     side = 2*turns
     for bot in bots:
-        bot.handle = sub.Popen(bot.command.split(), bufsize=1, universal_newlines=True, stdin=sub.PIPE, stdout=sub.PIPE)
+        bot.handle = sub.Popen(bot.command, bufsize=1, universal_newlines=True, shell=True, stdin=sub.PIPE, stdout=sub.PIPE)
         bot.report = "BEGIN %d %d %d\n"%(len(bots), turns, side)
     grid = [[0]*side for y in range(side)]
     for y in reversed(range(side)):
