@@ -15,8 +15,9 @@ def pos_to_str(pos):
 class Bot:
     "A bot."
 
-    def __init__(self, name, command, initial=None):
+    def __init__(self, name, directory, command, initial=None):
         self.name = name
+        self.directory = directory
         self.command = command
         self.initial = initial
         self.score = 0
@@ -25,6 +26,13 @@ class Bot:
         self.enemies = None
         self.last_choice = None
         self.report = None
+
+    def push_msg(self, message):
+        self.handle.stdin.write(message + '\n')
+        self.handle.stdin.flush()
+
+    def pull_msg(self):
+        return self.handle.stdout.readline().rstrip()
 
 class Vertex:
     "A vertex."
@@ -43,17 +51,20 @@ def open_bots(bot_path):
     bots = []
     bot_file = open(bot_path)
     while True:
-        line = bot_file.readline()
+        line = bot_file.readline().rstrip()
         if not line:
             break
         if line[0] == '#':
             continue
-        bot_name = line[:-1]
-        command = bot_file.readline()[:-1]
+        bot_name = line
+        directory = bot_file.readline().rstrip()
+        command = bot_file.readline().rstrip()
+        if sys.platform != "win32":
+            command = command.split()
         if verbose:
-            bots.append(Bot(bot_name, command, initial=alp.pop(0)))
+            bots.append(Bot(bot_name, directory, command, initial=alp.pop(0)))
         else:
-            bots.append(Bot(bot_name, command))
+            bots.append(Bot(bot_name, directory, command))
     bot_file.close()
     for i in range(len(bots)):
         order = list(range(len(bots)))
@@ -68,8 +79,9 @@ def run_round(bots):
     turns = len(bots)**2
     side = 2*turns
     for bot in bots:
-        bot.handle = sub.Popen(bot.command, bufsize=1, universal_newlines=True, stdin=sub.PIPE, stdout=sub.PIPE)
-        bot.report = "BEGIN %d %d %d\n"%(len(bots), turns, side)
+        directory = os.path.join("bots", bot.directory)
+        bot.handle = sub.Popen(bot.command, bufsize=1, universal_newlines=True, cwd=directory, stdin=sub.PIPE, stdout=sub.PIPE)
+        bot.report = "BEGIN %d %d %d"%(len(bots), turns, side)
     grid = [[0]*side for y in range(side)]
     for y in reversed(range(side)):
         for x in range(side):
@@ -78,47 +90,57 @@ def run_round(bots):
         # Destruction phase
         for bot in bots:
             bot.last_choice = None
-            time = t.time()
-            bot.handle.stdin.write(bot.report)
-            bot.handle.stdin.flush()
-            bot.handle.stdin.write("DESTROY %d\n"%(turn,))
-            bot.handle.stdin.flush()
-            response = bot.handle.stdout.readline()
-            if t.time() - time > 1:
-                print("  Bot %s was too slow to destroy."%(bot.name,))
+            time = t.perf_counter()
+            bot.push_msg(bot.report)
+            bot.push_msg("DESTROY %d"%(turn,))
+            response = bot.pull_msg()
+            resp_split = response.split()
+            delta = t.perf_counter() - time
+            if delta > 1:
+                print("  Bot %s was too slow to destroy (%f seconds)."%(bot.name, delta))
                 slows.add(bot)
-            if response[:6] == "VERTEX":
-                pos = (x,y) = tuple(map(int, response[7:].split(",")))
+            if resp_split and resp_split[0] == "VERTEX":
+                pos = (x,y) = tuple(map(int, resp_split[1].split(",")))
                 if grid[y][x].status == Vertex.INACTIVE:
                     grid[y][x].status = Vertex.BROKEN
                     bot.last_choice = pos
+            elif resp_split and resp_split[0] == "NONE":
+                pass
+            else:
+                print("Bot %s gave malformed response (%s)."%(bot.name, response))
+                sys.exit(0)
         # Make destruction reports
         for bot in bots:
-            bot.report = "BROKEN %d %s %s\n"%(turn, pos_to_str(bot.last_choice), " ".join(pos_to_str(enemy.last_choice) for enemy in bot.enemies))
+            bot.report = "BROKEN %d %s %s"%(turn, pos_to_str(bot.last_choice), " ".join(pos_to_str(enemy.last_choice) for enemy in bot.enemies))
         # Activation phase
         activated = set()
         for bot in bots:
             bot.last_choice = None
-            time = t.time()
-            bot.handle.stdin.write(bot.report)
-            bot.handle.stdin.flush()
-            bot.handle.stdin.write("ACTIVATE %d\n"%(turn,))
-            bot.handle.stdin.flush()
-            response = bot.handle.stdout.readline()
-            if t.time() - time > 1:
-                print("  Bot %s was too slow to claim."%(bot.name,))
+            time = t.perf_counter()
+            bot.push_msg(bot.report)
+            bot.push_msg("ACTIVATE %d"%(turn,))
+            response = bot.pull_msg()
+            resp_split = response.split()
+            delta = t.perf_counter() - time
+            if delta > 1:
+                print("  Bot %s was too slow to claim (%f seconds)."%(bot.name, delta))
                 slows.add(bot)
-            if response[:6] == "VERTEX":
-                pos = (x,y) = tuple(map(int, response[7:].split(",")))
+            if resp_split and resp_split[0] == "VERTEX":
+                pos = (x,y) = tuple(map(int, resp_split[1].split(",")))
                 if grid[y][x].status == Vertex.INACTIVE:
                     grid[y][x].owners.add(bot)
                     activated.add(pos)
                     bot.last_choice = pos
+            elif resp_split and resp_split[0] == "NONE":
+                pass
+            else:
+                print("Bot %s gave malformed response (%s)."%(bot.name, response))
+                sys.exit(0)
         for (x,y) in activated:
             grid[y][x].status = Vertex.ACTIVE
         # Make activation reports
         for bot in bots:
-            bot.report = "OWNED %d %s %s\n"%(turn, pos_to_str(bot.last_choice), " ".join(pos_to_str(enemy.last_choice) for enemy in bot.enemies))
+            bot.report = "OWNED %d %s %s"%(turn, pos_to_str(bot.last_choice), " ".join(pos_to_str(enemy.last_choice) for enemy in bot.enemies))
     # Compute scores by DFS
     print("  Finished, computing score.")
     if verbose:
@@ -155,16 +177,15 @@ def run_round(bots):
                         bot.delta_score += 1
     # Report back scores
     for bot in bots:
-        message = "SCORE %d %s\n"%(bot.delta_score, " ".join(str(enemy.delta_score) for enemy in bot.enemies))
-        time = t.time()
-        bot.handle.stdin.write(bot.report)
-        bot.handle.stdin.flush()
-        bot.handle.stdin.write(message)
-        bot.handle.stdin.flush()
+        message = "SCORE %d %s"%(bot.delta_score, " ".join(str(enemy.delta_score) for enemy in bot.enemies))
+        time = t.perf_counter()
+        bot.push_msg(bot.report)
+        bot.push_msg(message)
         bot.handle.stdin.close()
         bot.handle.wait()
-        if t.time() - time > 1:
-            print("  Bot %s was too slow to halt."%(bot.name,))
+        delta = t.perf_counter() - time
+        if delta > 1:
+            print("  Bot %s was too slow to halt (%f seconds)."%(bot.name, delta))
             slows.add(bot)
     return slows
 
