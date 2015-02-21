@@ -9,3 +9,6 @@ java Checkpoint
 FaucetBot
 faucetbot
 Rscript FaucetBot.R
+Connector
+connector
+java Connector
