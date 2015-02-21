@@ -101,9 +101,13 @@ def run_round(bots):
                 slows.add(bot)
             if resp_split and resp_split[0] == "VERTEX":
                 pos = (x,y) = tuple(map(int, resp_split[1].split(",")))
-                if grid[y][x].status == Vertex.INACTIVE:
-                    grid[y][x].status = Vertex.BROKEN
-                    bot.last_choice = pos
+                if 0 <= x < side and 0 <= y < side:
+                    if grid[y][x].status == Vertex.INACTIVE:
+                        grid[y][x].status = Vertex.BROKEN
+                        bot.last_choice = pos
+                else:
+                    print("Bot %s gave out-of-range vertex (%s)."%(bot.name, response))
+                    sys.exit(0)
             elif resp_split and resp_split[0] == "NONE":
                 pass
             else:
@@ -127,10 +131,14 @@ def run_round(bots):
                 slows.add(bot)
             if resp_split and resp_split[0] == "VERTEX":
                 pos = (x,y) = tuple(map(int, resp_split[1].split(",")))
-                if grid[y][x].status == Vertex.INACTIVE:
-                    grid[y][x].owners.add(bot)
-                    activated.add(pos)
-                    bot.last_choice = pos
+                if 0 <= x < side and 0 <= y < side:
+                    if grid[y][x].status == Vertex.INACTIVE:
+                        grid[y][x].owners.add(bot)
+                        activated.add(pos)
+                        bot.last_choice = pos
+                else:
+                    print("Bot %s gave out-of-range vertex (%s)."%(bot.name, response))
+                    sys.exit(0)
             elif resp_split and resp_split[0] == "NONE":
                 pass
             else:

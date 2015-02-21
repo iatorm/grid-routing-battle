@@ -5,4 +5,7 @@ randombuilder
 python3 random_builder.py
 Checkpoint
 checkpoint
-java Checkpoint
+java -classpath . Checkpoint
+FaucetBot
+faucetbot
+Rscript FaucetBot.R
