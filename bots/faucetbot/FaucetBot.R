@@ -39,7 +39,7 @@ repeat{
                 X <- NULL
                 while(length(X)<1){
                     lastrow <- which(N[,y-1]==1)
-                    newrow <- unlist(sapply(lastrow,function(x)which(N[,y]==0 & abs((1:L)-x)<2)))
+                    newrow <- unlist(sapply(lastrow,function(x)which(M[,y]==0 & abs((1:L)-x)<2)))
                     if(length(newrow)){
                         X <- sample(newrow,1)
                         Y <- y

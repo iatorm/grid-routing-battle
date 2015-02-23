@@ -58,9 +58,7 @@ def open_bots(bot_path):
             continue
         bot_name = line
         directory = bot_file.readline().rstrip()
-        command = bot_file.readline().rstrip()
-        if sys.platform != "win32":
-            command = command.split()
+        command = bot_file.readline().rstrip().split()
         if verbose:
             bots.append(Bot(bot_name, directory, command, initial=alp.pop(0)))
         else:
@@ -80,7 +78,12 @@ def run_round(bots):
     side = 2*turns
     for bot in bots:
         directory = os.path.join("bots", bot.directory)
-        bot.handle = sub.Popen(bot.command, bufsize=1, universal_newlines=True, cwd=directory, stdin=sub.PIPE, stdout=sub.PIPE)
+        try:
+            bot.handle = sub.Popen(bot.command, bufsize=1, universal_newlines=True, cwd=directory, stdin=sub.PIPE, stdout=sub.PIPE)
+            bot.handle.poll()
+        except IOError as err:
+            print("Error when executing %s with command "%bot.name + str(bot.command))
+            raise err
         bot.report = "BEGIN %d %d %d"%(len(bots), turns, side)
     grid = [[0]*side for y in range(side)]
     for y in reversed(range(side)):
