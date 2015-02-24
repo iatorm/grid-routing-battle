@@ -1,4 +1,3 @@
-import sys
 import random as r
 
 while True:
@@ -8,7 +7,6 @@ while True:
     elif msg[0] == "DESTROY":
         print("NONE")
     elif msg[0] == "ACTIVATE":
-        print("VERTEX %d,%d"%(r.randrange(side_len), r.randrange(side_len)))
-        sys.stdout.flush()
+        print("VERTEX %d,%d"%(r.randrange(side_len), r.randrange(side_len)), flush=True)
     elif msg[0] == "SCORE":
         break
