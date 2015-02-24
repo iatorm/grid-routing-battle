@@ -12,13 +12,20 @@ Call the controller simply with
 python controller.py
 ```
 
-or pass the number of rounds as an argument (the default is 100):
+or pass the number of rounds as an argument (the default is 1):
 
 ```
 python controller.py 50
 ```
 
-The option `-v` can be added to obtain graphical output in ASCII, although it is probably too large to fit on a screen if more than 4 bots are present.
+### Options
+
+The option `-v` can be added to obtain graphical output in ASCII, although it is too large to fit on a screen if too many bots are present.
+
+The option `-e` captures the STDERR of all bots and prevents it from being printed.
+This may be convenient when writing a bot, if you want to frequently switch between debugging and observing its behavior with `-v`.
+
+The option `-h` displays a help message.
 
 ## Bot Files
 
@@ -34,7 +41,7 @@ The commands are executed with the bot's subdirectory as the working directory.
 ## Bot API
 
 Each bot is executed at the beginning of every round.
-The controller writes to the bots' STDIN and reads from their STDOUT; their STDERR is not redirected, so it can be used for debugging.
+The controller writes to the bots' STDIN and reads from their STDOUT.
 There are six types of messages that the controller can send, and they are listed in the following.
 A letter in brackets, as in `[n]`, signifies a variable, as opposed to the actual character `n`, and each message and response shall be followed by a newline.
 

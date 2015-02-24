@@ -1,10 +1,9 @@
 
+import argparse as arg
 import sys, os
 import subprocess as sub
 import random as r
 import time as t
-
-verbose = False
 
 def pos_to_str(pos):
     if pos is None:
@@ -45,8 +44,7 @@ class Vertex:
         self.status = self.INACTIVE
         self.owners = set()
 
-def open_bots(bot_path):
-    global verbose
+def open_bots(bot_path, verbose):
     alp = list("abcdefghijklmnopqrstuvwxyz")
     bots = []
     bot_file = open(bot_path)
@@ -71,7 +69,7 @@ def open_bots(bot_path):
         bots[i].enemies = [bots[j] for j in order]
     return bots
         
-def run_round(bots):
+def run_round(bots, verbose, suppress_errors):
     slows = set()
     # Initial message: number of bots, number of turns, sidelength
     turns = len(bots)**2
@@ -79,7 +77,8 @@ def run_round(bots):
     for bot in bots:
         directory = os.path.join("bots", bot.directory)
         try:
-            bot.handle = sub.Popen(bot.command, bufsize=1, universal_newlines=True, cwd=directory, stdin=sub.PIPE, stdout=sub.PIPE)
+            err_pipe = sub.PIPE if suppress_errors else None
+            bot.handle = sub.Popen(bot.command, bufsize=1, universal_newlines=True, cwd=directory, stdin=sub.PIPE, stdout=sub.PIPE, stderr=err_pipe)
             bot.handle.poll()
         except IOError as err:
             print("Error when executing %s with command "%bot.name + str(bot.command))
@@ -201,17 +200,18 @@ def run_round(bots):
     return slows
 
 def main():
-    global verbose
-    if len(sys.argv) > 1:
-        rounds = int(sys.argv[-1])
-    else:
-        rounds = 100
-    if "-v" in sys.argv:
-        verbose = True
+    parser = arg.ArgumentParser(prog="controller.py")
+    parser.add_argument("-v", help="produce verbose ASCII art output", action="store_const", const=True, default=False)
+    parser.add_argument("-e", help="suppress STDERR for bot processes", action="store_const", const=True, default=False)
+    parser.add_argument("rounds", nargs="?", default=1)
+    args = parser.parse_args(sys.argv[1:])
+    verbose = args.v
+    suppress_errors = args.e
+    rounds = int(args.rounds)
     print("Initializing bots.")
     for bot_dir in os.listdir("bots"):
         open(os.path.join("bots", bot_dir, "data.txt"), "w").close()
-    bots = open_bots("bots.txt")
+    bots = open_bots("bots.txt", verbose)
     print("Bots:")
     for bot in bots:
         if verbose:
@@ -222,7 +222,7 @@ def main():
     slow_bots = set()
     for i in range(rounds):
         print("  Round %d"%(i,))
-        slow_bots.update(run_round(bots))
+        slow_bots.update(run_round(bots, verbose, suppress_errors))
         print("  Results: " + " ".join(str(bot.delta_score) for bot in bots))
     print("Final results:")
     for bot in sorted(bots, key=lambda b: -b.score):
