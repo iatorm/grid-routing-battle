@@ -45,6 +45,7 @@ repeat{
                         Y <- y
                         }
                     y <- y+1
+                    if(y>L){X <- x0; Y <- 1}
                     }
                 }
         cat(sprintf("VERTEX %s,%s\n",X-1,Y-1))
