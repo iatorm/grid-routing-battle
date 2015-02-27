@@ -14,6 +14,7 @@ public class Connector {
     private int size = 0;
     private int[][] grid = new int[size][size];
     private int startingPoint = 0;
+    private final List<Point> path = new ArrayList<>();
 
     public static void main(String[] args) {
         new Connector().start();
@@ -69,10 +70,15 @@ public class Connector {
             startingPoint = r.nextInt(size);
             return "VERTEX " + startingPoint + "," + 0;
         }
+        path.clear();
         Point lastCell = findLastPathCell(startingPoint, 0);
         if (lastCell.y == size-1) {
             //path is done
-            return "N";
+            Point extendingPathPoint = findExtendingPathPoint();
+            if (extendingPathPoint == null) {
+                return "NONE";
+            }
+            return "VERTEX " + extendingPathPoint.x + "," + extendingPathPoint.y;
         } else {
             int x = findBestX(lastCell.x, lastCell.y);
             return "VERTEX " + x + "," + (lastCell.y + 1);
@@ -88,6 +94,8 @@ public class Connector {
             int score = calcCellScore(newX, newY, 10);
             if (score > bestScore) {
                 bestScore = score;
+                bestX = newX;
+            } else if (score == bestScore && Math.random() < 0.3) {
                 bestX = newX;
             }
         }
@@ -124,6 +132,7 @@ public class Connector {
         }
         List<Point> endCells = new ArrayList<>();
         endCells.add(thisCell);
+        path.add(thisCell);
         for (int i = -1; i <= 1; i++) {
             int newX = (x + i + size) % size;
             if (grid[newX][newY] == ACTIVE || grid[newX][newY] == MINE) {
@@ -139,6 +148,25 @@ public class Connector {
             }
         }
         return bestPoint;
+    }
+
+    private Point findExtendingPathPoint() {
+        Random rand = new Random();
+        for (int i = 0; i < size; i++) {
+            Point cell = path.get(rand.nextInt(path.size()));
+            for (int j = -1; j <= 1; j += 2) {
+                Point newCellX = new Point((cell.x + j + size) % size, cell.y);
+                if (grid[newCellX.x][newCellX.y] == INACTIVE)
+                    return newCellX;
+
+                Point newCellY = new Point(cell.x, cell.y + j);
+                if (cell.y < 0 || cell.y >= size)
+                    continue;
+                if (grid[newCellY.x][newCellY.y] == INACTIVE)
+                    return newCellY;
+            }
+        }
+        return null;
     }
 
     private void update(String[] args, boolean destroyPhase) {
@@ -158,5 +186,6 @@ public class Connector {
                 }
             }
         }
-    }       
+    }
+
 }
