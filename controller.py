@@ -73,7 +73,7 @@ def run_round(bots, verbose, suppress_errors):
     slows = set()
     # Initial message: number of bots, number of turns, sidelength
     turns = len(bots)**2
-    side = 2*turns
+    side = int(4/3*turns)
     for bot in bots:
         directory = os.path.join("bots", bot.directory)
         try:
