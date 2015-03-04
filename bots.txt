@@ -6,9 +6,9 @@ python3 random_builder.py
 Checkpoint
 checkpoint
 java Checkpoint
-FaucetBot
-faucetbot
-Rscript FaucetBot.R
+#FaucetBot
+#faucetbot
+#Rscript FaucetBot.R
 Connector
 connector
 java Connector
@@ -24,6 +24,6 @@ python3 explorer.py
 Watermelon
 watermelon
 java Watermelon
-#Peacemaker
-#peacemaker
-#java Peacemaker
+Peacemaker
+peacemaker
+java Peacemaker

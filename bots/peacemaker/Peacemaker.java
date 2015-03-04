@@ -76,11 +76,14 @@ public class Peacemaker {
             int posX = point.x;
             int posY = point.y;
             int count = 1;
-            while (grid[posX][posY] == BROKEN) {
+            while (grid[posX][posY] == BROKEN || grid[posX][posY] == MINE) {
                 if (count + posX > size || count + posY > size)
                     count = -count;
-                posX+= r.nextInt(count);
-                posY+= r.nextInt(count);
+                if (count == 0)
+                    count = 1;
+                posX+= r.nextInt(Math.abs(count)) * Math.signum(count);
+                posY+= r.nextInt(Math.abs(count)) * Math.signum(count);
+
                 count++;
             }
 
