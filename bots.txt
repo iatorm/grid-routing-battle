@@ -9,9 +9,9 @@ java Checkpoint
 #FaucetBot
 #faucetbot
 #Rscript FaucetBot.R
-Connector
-connector
-java Connector
+#Connector
+#connector
+#java Connector
 Funnelweb
 funnelweb
 python funnelweb.py
@@ -24,6 +24,6 @@ python3 explorer.py
 Watermelon
 watermelon
 java Watermelon
-Peacemaker
-peacemaker
-java Peacemaker
+#Peacemaker
+#peacemaker
+#java Peacemaker
