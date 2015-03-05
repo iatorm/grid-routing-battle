@@ -70,7 +70,6 @@ public class Connector {
             previousCell = new Point(r.nextInt(size), 0);
             return "VERTEX " + previousCell.x + "," + 0;
         }
-        path.clear();
         Point lastCell = findLastPathCell(previousCell.x, previousCell.y);
         if (lastCell.y == size-1) {
             //path is done
@@ -151,6 +150,8 @@ public class Connector {
     }
 
     private Point findExtendingPathPoint() {
+        if (path.size() == 0)
+            return null;
         Random rand = new Random();
         for (int i = 0; i < size; i++) {
             Point cell = path.get(rand.nextInt(path.size()));
@@ -180,6 +181,7 @@ public class Connector {
                         grid[x][y] = BROKEN;
                     } else if (i == 2) {
                         grid[x][y] = MINE;
+                        path.add(new Point(x,y));
                         previousCell = new Point(x,y);
                     } else {
                         grid[x][y] = ACTIVE;
@@ -188,5 +190,4 @@ public class Connector {
             }
         }
     }
-
 }

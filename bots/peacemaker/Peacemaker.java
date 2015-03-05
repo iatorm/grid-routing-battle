@@ -81,8 +81,9 @@ public class Peacemaker {
                     count = -count;
                 if (count == 0)
                     count = 1;
-                posX+= r.nextInt(Math.abs(count)) * Math.signum(count);
-                posY+= r.nextInt(Math.abs(count)) * Math.signum(count);
+                    posX+= Math.min(r.nextInt(Math.abs(count)) * Math.signum(count), size - 1 - posX);
+                    posY+= Math.min(r.nextInt(Math.abs(count)) * Math.signum(count), size - 1 - posY);
+
 
                 count++;
             }
