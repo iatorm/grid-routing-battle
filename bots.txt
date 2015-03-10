@@ -6,9 +6,9 @@ python3 random_builder.py
 Checkpoint
 checkpoint
 java Checkpoint
-#FaucetBot
-#faucetbot
-#Rscript FaucetBot.R
+FaucetBot
+faucetbot
+Rscript FaucetBot.R
 Connector
 connector
 java Connector

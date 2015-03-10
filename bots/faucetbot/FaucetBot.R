@@ -18,7 +18,7 @@ repeat{
                 X <- free[which.min(abs(free-mine))]
                 Y <- 2
                 }
-        cat(sprintf("VERTEX %s,%s\n",X-1,Y-1))
+        if(length(X)){cat(sprintf("VERTEX %s,%s\n",X-1,Y-1))}else{cat("NONE\n")}
         flush(stdout())
         }
     if(args[1]=="BROKEN"){
