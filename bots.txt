@@ -24,6 +24,6 @@ python3 explorer.py
 Watermelon
 watermelon
 java Watermelon
-#Peacemaker
-#peacemaker
-#java Peacemaker
+Peacemaker
+peacemaker
+java Peacemaker

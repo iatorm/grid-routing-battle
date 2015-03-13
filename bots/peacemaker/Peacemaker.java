@@ -75,17 +75,20 @@ public class Peacemaker {
 
             int posX = point.x;
             int posY = point.y;
-            int count = 1;
+
             while (grid[posX][posY] == BROKEN || grid[posX][posY] == MINE) {
-                if (count + posX > size || count + posY > size)
-                    count = -count;
-                if (count == 0)
-                    count = 1;
-                    posX+= Math.min(r.nextInt(Math.abs(count)) * Math.signum(count), size - 1 - posX);
-                    posY+= Math.min(r.nextInt(Math.abs(count)) * Math.signum(count), size - 1 - posY);
+                 int previousX = (posX - 1 < 0 ? size - 1 : posX - 1);
+                 int nextX = (posX + 1 > size - 1 ? 0 : posX + 1);
+                 int previousY = (posY - 1 < 0 ? size - 1 : posY - 1);
+                 int nextY = (posY + 1 > size - 1 ? 0 : posY + 1);
 
-
-                count++;
+                 int choice = r.nextInt(4);
+                 switch (choice) {
+                     case 0: posX = previousX; break;
+                     case 1: posX = nextX; break;
+                     case 2: posY = previousY; break;
+                     case 3: posY = nextY; break;
+                 }
             }
 
             return "VERTEX " + posX + "," + posY;
